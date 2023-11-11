@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PRY20232084.Models;
@@ -6,6 +7,7 @@ using PRY20232084.Models.DTOs;
 
 namespace PRY20232084.Controllers
 {
+    [EnableCors("InventoryManagement")]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase

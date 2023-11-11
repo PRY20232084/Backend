@@ -5,9 +5,11 @@ using PRY20232084.Models.Entities;
 using PRY20232084.DTOs;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 
 namespace PRY20232084.Controllers
 {
+    [EnableCors("InventoryManagement")]
     [Route("api/[controller]")]
     [ApiController]
     public class RawMaterialsController : ControllerBase
@@ -33,9 +35,22 @@ namespace PRY20232084.Controllers
                     Color = r.Color,
                     Stock = r.Stock,
                     MeasurementUnit_ID = r.MeasurementUnit_ID,
-                    CreatedBy = r.CreatedBy
+                    CreatedBy = r.CreatedBy,
+                    MeasurementUnitName = "a"
                 })
                 .ToListAsync();
+
+            foreach(RawMaterialResponseDTO rawMaterial in rawMaterials)
+            {
+                var user = await _context.Users.FindAsync(rawMaterial.CreatedBy);
+                rawMaterial.CreatedBy = user.Name;
+            }
+
+            foreach (RawMaterialResponseDTO rawMaterial in rawMaterials)
+            {
+                var measurementUnit = await _context.MeasurementUnits.FindAsync(rawMaterial.MeasurementUnit_ID);
+                rawMaterial.MeasurementUnitName = measurementUnit.Name;
+            }
 
             return rawMaterials;
         }

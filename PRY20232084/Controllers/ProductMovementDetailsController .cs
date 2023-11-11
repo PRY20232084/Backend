@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRY20232084.Data;
 using PRY20232084.DTOs;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace PRY20232084.Controllers
 {
+    [EnableCors("InventoryManagement")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductMovementDetailsController : ControllerBase

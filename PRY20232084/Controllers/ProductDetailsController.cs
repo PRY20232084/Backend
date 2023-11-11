@@ -5,9 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using PRY20232084.Data;
 using PRY20232084.Models.Entities;
 using PRY20232084.Models.DTOs;
+using Microsoft.AspNetCore.Cors;
 
 namespace PRY20232084.Controllers
 {
+    [EnableCors("InventoryManagement")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductDetailsController : ControllerBase

@@ -9,6 +9,7 @@
         public string Color { get; set; }
         public decimal Stock { get; set; }
         public int MeasurementUnit_ID { get; set; }
+        public string MeasurementUnitName { get; set; }
         public string CreatedBy { get; set; }
     }
 }

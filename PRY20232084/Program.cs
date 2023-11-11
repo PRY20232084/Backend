@@ -40,7 +40,15 @@ builder.Services.AddTransient<ISizeDA, SizeDA>();
 // ADD SERVICES
 builder.Services.AddTransient<SizeService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("InventoryManagement",
+        builder => builder.WithOrigins("*").WithHeaders("*").WithMethods("*"));
+});
+
 var app = builder.Build();
+
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

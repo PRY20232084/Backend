@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using PRY20232084.Data;
 using PRY20232084.Models.Entities;
 using PRY20232084.DTOs;
+using Microsoft.AspNetCore.Cors;
 
 namespace PRY20232084.Controllers
 {
+    [EnableCors("InventoryManagement")]
     [Route("api/[controller]")]
     [ApiController]
     public class MovementsController : ControllerBase
@@ -37,6 +39,13 @@ namespace PRY20232084.Controllers
                     CreatedBy = m.CreatedBy
                 })
                 .ToListAsync();
+
+            // fetch username for each movement
+            foreach (MovementResponseDTO movement in movements)
+            {
+                var user = await _context.Users.FindAsync(movement.CreatedBy);
+                movement.CreatedBy = user.Name;
+            }
 
             return movements;
         }

@@ -7,6 +7,8 @@
         public string Description { get; set; }
         public int Size_ID { get; set; }
         public int Style_ID { get; set; }
+        public string sizeName { get; set; }
+        public string styleName { get; set; }
         public int Stock { get; set; }
         public string CreatedBy { get; set; }
     }

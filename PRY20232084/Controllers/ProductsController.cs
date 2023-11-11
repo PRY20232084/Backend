@@ -5,9 +5,11 @@ using PRY20232084.Models.Entities;
 using PRY20232084.DTOs;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 
 namespace PRY20232084.Controllers
 {
+    [EnableCors("InventoryManagement")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -35,6 +37,24 @@ namespace PRY20232084.Controllers
                     CreatedBy = p.CreatedBy
                 })
                 .ToListAsync();
+
+            foreach (ProductResponseDTO product in products)
+            {
+                var user = await _context.Users.FindAsync(product.CreatedBy);
+                product.CreatedBy = user.Name;
+            }
+
+            foreach (ProductResponseDTO product in products)
+            {
+                var size = await _context.Sizes.FindAsync(product.Size_ID);
+                product.sizeName = size.Name;
+            }
+
+            foreach (ProductResponseDTO product in products)
+            {
+                var style = await _context.Styles.FindAsync(product.Style_ID);
+                product.styleName = style.Name;
+            }
 
             return products;
         }
