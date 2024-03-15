@@ -6,12 +6,14 @@ using PRY20232084.DTOs;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PRY20232084.Controllers
 {
     [EnableCors("InventoryManagement")]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "ENTREPRENEUR")]
     public class RawMaterialsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

@@ -13,10 +13,12 @@ namespace PRY20232084.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public UsersController(UserManager<ApplicationUser> userManager)
+        public UsersController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         [HttpPost("register")]
@@ -46,6 +48,19 @@ namespace PRY20232084.Controllers
             }
 
             return BadRequest("Datos de registro inválidos.");
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        {
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
+
+            if (result.Succeeded)
+            {
+                return Ok("Inicio de sesión exitoso.");
+            }
+
+            return BadRequest("Inicio de sesión fallido.");
         }
 
         [HttpGet("list")]
