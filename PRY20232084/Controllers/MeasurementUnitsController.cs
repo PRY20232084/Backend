@@ -113,7 +113,7 @@ namespace PRY20232084.Controllers
         // POST: api/MeasurementUnits
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<MeasurementUnit>> PostMeasurementUnit(MeasurementUnitCreateDTO measurementUnitCreateDTO)
+        public async Task<ActionResult> PostMeasurementUnit(MeasurementUnitCreateDTO measurementUnitCreateDTO)
         {
             var measurementUnit = new MeasurementUnit
             {
@@ -125,21 +125,13 @@ namespace PRY20232084.Controllers
             _context.MeasurementUnits.Add(measurementUnit);
             await _context.SaveChangesAsync();
 
-            var user = await _context.Users.FindAsync(measurementUnit.CreatedBy);
-
-            measurementUnit.CreatedBy = user.Name;
-
-            return CreatedAtAction("GetMeasurementUnit", new { id = measurementUnit.ID }, measurementUnit);
+            return Ok(new { message = "Measurement unit saved successfully." });
         }
 
         // DELETE: api/MeasurementUnits/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMeasurementUnit(int id)
         {
-            if (_context.MeasurementUnits == null)
-            {
-                return NotFound();
-            }
             var measurementUnit = await _context.MeasurementUnits.FindAsync(id);
             if (measurementUnit == null)
             {
@@ -149,7 +141,7 @@ namespace PRY20232084.Controllers
             _context.MeasurementUnits.Remove(measurementUnit);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(new { message = "Measurement unit deleted successfully." });
         }
 
         private bool MeasurementUnitExists(int id)
