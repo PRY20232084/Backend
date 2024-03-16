@@ -44,6 +44,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("InventoryManagement",
         builder => builder.WithOrigins("*").WithHeaders("*").WithMethods("*"));
+    options.AddPolicy(name: "AllowSpecificOrigin",
+                  policy =>
+                  {
+                      policy.WithOrigins("http://localhost:4200") // Angular CLI default port
+                             .AllowAnyHeader()
+                             .AllowAnyMethod();
+                  });
 });
 
 var app = builder.Build();

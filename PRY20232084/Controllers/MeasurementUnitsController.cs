@@ -95,7 +95,7 @@ namespace PRY20232084.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-                return Ok("Measurement unit updated successfully.");
+                return Ok(new { message = "Measurement unit updated successfully." });
             }
             catch (DbUpdateConcurrencyException)
             {

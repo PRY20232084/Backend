@@ -41,13 +41,13 @@ namespace PRY20232084.Controllers
 
                 if (result.Succeeded)
                 {
-                    return Ok("Usuario registrado exitosamente.");
+                    return Ok(new { message = "Usuario registrado exitosamente." });
                 }
 
-                return BadRequest("Error al registrar el usuario.");
+                return BadRequest(new { message = "Error al registrar el usuario." });
             }
 
-            return BadRequest("Datos de registro inválidos.");
+            return BadRequest(new { message = "Datos de registro inválidos." });
         }
 
         [HttpPost("login")]
