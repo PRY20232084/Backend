@@ -57,7 +57,21 @@ namespace PRY20232084.Controllers
 
             if (result.Succeeded)
             {
-                return Ok("Inicio de sesión exitoso.");
+                //return user name
+                var user = _userManager.FindByNameAsync(model.Email).Result;
+
+                var userModel = new RegisterModel();
+
+                userModel.Email = user.Email;
+                userModel.Name = user.Name;
+                userModel.Phone = user.Phone;
+                userModel.UserType = user.UserType;
+                userModel.Enterprise = user.Enterprise;
+                userModel.RegisterDate = user.RegisterDate;
+
+                return Ok(userModel);
+
+                //return Ok("Inicio de sesión exitoso.");
             }
 
             return BadRequest("Inicio de sesión fallido.");
