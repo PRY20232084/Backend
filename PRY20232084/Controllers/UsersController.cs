@@ -60,8 +60,9 @@ namespace PRY20232084.Controllers
                 //return user name
                 var user = _userManager.FindByNameAsync(model.Email).Result;
 
-                var userModel = new RegisterModel();
+                var userModel = new UserModel();
 
+                userModel.Id = user.Id;
                 userModel.Email = user.Email;
                 userModel.Name = user.Name;
                 userModel.Phone = user.Phone;
