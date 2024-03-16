@@ -13,7 +13,6 @@ namespace PRY20232084.Controllers
     [EnableCors("InventoryManagement")]
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "ENTREPRENEUR")]
     public class RawMaterialsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

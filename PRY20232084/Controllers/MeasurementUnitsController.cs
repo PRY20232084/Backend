@@ -34,6 +34,7 @@ namespace PRY20232084.Controllers
             var measurementUnits = await _context.MeasurementUnits
                 .Select(d => new MeasurementUnitRequestDTO
                 {
+                    ID = d.ID,
                     Name = d.Name,
                     Abbreviation = d.Abbreviation,
                     CreatedBy = d.CreatedBy
@@ -58,6 +59,7 @@ namespace PRY20232084.Controllers
                 .Where(x => x.ID == id)
                 .Select(d => new MeasurementUnitRequestDTO
                 {
+                    ID = d.ID,
                     Name = d.Name,
                     Abbreviation = d.Abbreviation,
                     CreatedBy = d.CreatedBy
