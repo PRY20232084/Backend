@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRY20232084.Data;
+using PRY20232084.DTOs;
 using PRY20232084.Models;
 using PRY20232084.Models.DTOs;
 using PRY20232084.Models.Entities;
@@ -28,29 +29,48 @@ namespace PRY20232084.Controllers
 
         // GET: api/MeasurementUnits
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MeasurementUnit>>> GetMeasurementUnits()
+        public async Task<ActionResult<IEnumerable<MeasurementUnitRequestDTO>>> GetMeasurementUnits()
         {
-            if (_context.MeasurementUnits == null)
+            var measurementUnits = await _context.MeasurementUnits
+                .Select(d => new MeasurementUnitRequestDTO
+                {
+                    Name = d.Name,
+                    Abbreviation = d.Abbreviation,
+                    CreatedBy = d.CreatedBy
+                })
+                .ToListAsync();
+
+            // fetch username for each movement
+            foreach (MeasurementUnitRequestDTO measurementUnit in measurementUnits)
             {
-                return NotFound();
+                var user = await _context.Users.FindAsync(measurementUnit.CreatedBy);
+                measurementUnit.CreatedBy = user.Name;
             }
-            return await _context.MeasurementUnits.ToListAsync();
+
+            return measurementUnits;
         }
 
         // GET: api/MeasurementUnits/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MeasurementUnit>> GetMeasurementUnit(int id)
+        public async Task<ActionResult<MeasurementUnitRequestDTO>> GetMeasurementUnit(int id)
         {
-            if (_context.MeasurementUnits == null)
-            {
-                return NotFound();
-            }
-            var measurementUnit = await _context.MeasurementUnits.FindAsync(id);
+            var measurementUnit = await _context.MeasurementUnits
+                .Where(x => x.ID == id)
+                .Select(d => new MeasurementUnitRequestDTO
+                {
+                    Name = d.Name,
+                    Abbreviation = d.Abbreviation,
+                    CreatedBy = d.CreatedBy
+                })
+                .SingleOrDefaultAsync();
 
             if (measurementUnit == null)
             {
                 return NotFound();
             }
+
+            var user = await _context.Users.FindAsync(measurementUnit.CreatedBy);
+            measurementUnit.CreatedBy = user.Name;
 
             return measurementUnit;
         }
@@ -60,23 +80,20 @@ namespace PRY20232084.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMeasurementUnit(int id, MeasurementUnitDTO measurementUnitDTO)
         {
-            if (id != id)
+            var measurementUnit = await _context.MeasurementUnits.FindAsync(id);
+
+            if (measurementUnit == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            var measurementUnit = new MeasurementUnit
-            {
-                ID = id,
-                Name = measurementUnitDTO.Name,
-                Abbreviation = measurementUnitDTO.Abbreviation
-            };
-
-            _context.Entry(measurementUnit).State = EntityState.Modified;
+            measurementUnit.Name = measurementUnitDTO.Name;
+            measurementUnit.Abbreviation = measurementUnitDTO.Abbreviation;
 
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok("Measurement unit updated successfully.");
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -89,8 +106,6 @@ namespace PRY20232084.Controllers
                     throw;
                 }
             }
-
-            return NoContent();
         }
 
         // POST: api/MeasurementUnits
@@ -107,6 +122,10 @@ namespace PRY20232084.Controllers
 
             _context.MeasurementUnits.Add(measurementUnit);
             await _context.SaveChangesAsync();
+
+            var user = await _context.Users.FindAsync(measurementUnit.CreatedBy);
+
+            measurementUnit.CreatedBy = user.Name;
 
             return CreatedAtAction("GetMeasurementUnit", new { id = measurementUnit.ID }, measurementUnit);
         }

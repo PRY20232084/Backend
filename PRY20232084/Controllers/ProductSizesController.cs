@@ -36,6 +36,13 @@ namespace PRY20232084.Controllers
                 })
                 .ToListAsync();
 
+            // fetch username for each movement
+            foreach (ProductSizeResponseDTO productSizeResponseDTO in sizes)
+            {
+                var user = await _context.Users.FindAsync(productSizeResponseDTO.CreatedBy);
+                productSizeResponseDTO.CreatedBy = user.Name;
+            }
+
             return sizes;
         }
 
@@ -56,6 +63,9 @@ namespace PRY20232084.Controllers
             {
                 return NotFound();
             }
+
+            var user = await _context.Users.FindAsync(size.CreatedBy);
+            size.CreatedBy = user.Name;
 
             return size;
         }

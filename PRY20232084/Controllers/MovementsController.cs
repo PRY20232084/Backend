@@ -67,6 +67,10 @@ namespace PRY20232084.Controllers
                 })
                 .FirstOrDefaultAsync();
 
+            var user = await _context.Users.FindAsync(movement.CreatedBy);
+
+            movement.CreatedBy = user.Name;
+
             if (movement == null)
             {
                 return NotFound();
@@ -120,6 +124,8 @@ namespace PRY20232084.Controllers
             _context.Movements.Add(movement);
             await _context.SaveChangesAsync();
 
+            var user = await _context.Users.FindAsync(movement.CreatedBy);
+
             var responseDTO = new MovementResponseDTO
             {
                 ID = movement.ID,
@@ -128,7 +134,7 @@ namespace PRY20232084.Controllers
                 BoughtDate = movement.BoughtDate,
                 MovementType = movement.MovementType,
                 RegisterType = movement.RegisterType,
-                CreatedBy = movement.CreatedBy
+                CreatedBy = user.Name
             };
 
             return CreatedAtAction("GetMovement", new { id = movement.ID }, responseDTO);
@@ -141,6 +147,38 @@ namespace PRY20232084.Controllers
             if (movement == null)
             {
                 return NotFound();
+            }
+
+            var movementType = movement.MovementType;
+            var registerType = movement.RegisterType;
+
+            if (registerType) //raw material
+            {
+                var rawMaterialDetail = movement.RawMaterialMovementDetails.FirstOrDefault();
+                var rawMaterial = _context.RawMaterials.Where(x => x.ID == rawMaterialDetail.RawMaterial_ID).FirstOrDefault();
+                
+                if (movementType) //ingreso
+                {
+                    rawMaterial.Stock -= rawMaterialDetail.Quantity;
+                }
+                else //salida
+                {
+                    rawMaterial.Stock += rawMaterialDetail.Quantity;
+                }
+            }
+            else //product
+            {
+                var productDetail = movement.ProductMovementDetails.FirstOrDefault();
+                var product = _context.Products.Where(x => x.ID == productDetail.Product_ID).FirstOrDefault();
+
+                if (movementType) //ingreso
+                {
+                    product.Stock -= productDetail.Quantity;
+                }
+                else //salida
+                {
+                    product.Stock += productDetail.Quantity;
+                }
             }
 
             _context.Movements.Remove(movement);

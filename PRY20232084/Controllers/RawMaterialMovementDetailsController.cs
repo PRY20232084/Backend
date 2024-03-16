@@ -106,6 +106,19 @@ namespace PRY20232084.Controllers
             };
 
             _context.RawMaterialMovementDetails.Add(detail);
+
+            var rawMaterial = _context.RawMaterials.Where(x => x.ID == detailRequestDTO.RawMaterial_ID).FirstOrDefault();
+            var movement = _context.Movements.Where(x => x.ID == detailRequestDTO.Movement_ID).FirstOrDefault();
+
+            if (movement.MovementType) //Ingreso
+            {
+                rawMaterial.Stock += detailRequestDTO.Quantity;
+            }
+            else
+            {
+                rawMaterial.Stock -= detailRequestDTO.Quantity;
+            }
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetRawMaterialMovementDetail", new { id = detail.ID }, new RawMaterialMovementDetailResponseDTO

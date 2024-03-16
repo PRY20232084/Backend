@@ -79,6 +79,19 @@ namespace PRY20232084.Controllers
             };
 
             _context.ProductMovementDetails.Add(productMovementDetail);
+
+            var product = _context.Products.Where(x => x.ID == createDTO.ProductID).FirstOrDefault();
+            var movement = _context.Movements.Where(x => x.ID == createDTO.MovementID).FirstOrDefault();
+
+            if (movement.MovementType) //Ingreso
+            {
+                product.Stock += createDTO.Quantity;
+            }
+            else
+            {
+                product.Stock -= createDTO.Quantity;
+            }
+
             await _context.SaveChangesAsync();
 
             var responseDTO = new ProductMovementDetailDTO
