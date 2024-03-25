@@ -80,7 +80,69 @@ namespace PRY20232084.Controllers
             return movement;
         }
 
-        [HttpPut("UpdateRawMaterialMovement/{id}")]
+		[HttpGet("GetRawMaterialMovement/{id}")]
+		public async Task<ActionResult<RawMaterialMovementDTO>> GetRawMaterialMovement(int id)
+		{
+			var movement = await _context.Movements.Include(x => x.RawMaterialMovementDetails)
+				.Where(m => m.ID == id)
+				.Select(m => new RawMaterialMovementDTO
+				{
+					ID = m.ID,
+					Description = m.Description,
+					CreatedAt = m.CreatedAt,
+					BoughtDate = m.BoughtDate,
+					MovementType = m.MovementType,
+					RegisterType = m.RegisterType,
+					CreatedBy = m.CreatedBy,
+					rawMaterialDetailDTO = m.RawMaterialMovementDetails.Select(x => new RawMaterialMovementDetailRequestDTO
+					{
+						Movement_ID = x.Movement_ID,
+						RawMaterial_ID = x.RawMaterial_ID,
+						Quantity = x.Quantity
+					}).FirstOrDefault()
+				})
+				.FirstOrDefaultAsync();
+
+			if (movement == null)
+			{
+				return NotFound();
+			}
+
+			return movement;
+		}
+
+		[HttpGet("GetProductMovement/{id}")]
+		public async Task<ActionResult<ProductMovementDTO>> GetProductMovement(int id)
+		{
+			var movement = await _context.Movements.Include(x => x.ProductMovementDetails)
+				.Where(m => m.ID == id)
+				.Select(m => new ProductMovementDTO
+				{
+					ID = m.ID,
+					Description = m.Description,
+					CreatedAt = m.CreatedAt,
+					BoughtDate = m.BoughtDate,
+					MovementType = m.MovementType,
+					RegisterType = m.RegisterType,
+					CreatedBy = m.CreatedBy,
+					productDetailDTO = m.ProductMovementDetails.Select(x => new ProductMovementDetailDTO
+					{
+						ProductID = x.Product_ID,
+						MovementID = x.Movement_ID,
+						Quantity = x.Quantity
+					}).FirstOrDefault()
+				})
+				.FirstOrDefaultAsync();
+
+			if (movement == null)
+			{
+				return NotFound();
+			}
+
+			return movement;
+		}
+
+		[HttpPut("UpdateRawMaterialMovement/{id}")]
         public async Task<IActionResult> UpdateRawMaterialMovement(int id, UpdateRawMaterialMovementDTO rawMaterialMovementDTO)
         {
 			var movement = _context.Movements.Include(x => x.RawMaterialMovementDetails).Include(x => x.ProductMovementDetails).Where(x => x.ID == id).FirstOrDefault();

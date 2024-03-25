@@ -6,6 +6,7 @@ using PRY20232084.DTOs;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
+using PRY20232084.Models.DTOs;
 
 namespace PRY20232084.Controllers
 {
@@ -102,7 +103,21 @@ namespace PRY20232084.Controllers
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProduct", new { id = product.ID }, product);
+            foreach(CreateProductDetailDTO detail in productDTO.productDetailDTOs)
+            {
+				var productDetail = new ProductDetail
+				{
+					Product_ID = product.ID,
+					RawMaterial_ID = detail.RawMaterial_ID,
+					Quantity = detail.Quantity
+				};
+				_context.ProductDetails.Add(productDetail);
+			}
+
+			await _context.SaveChangesAsync();
+
+            //return CreatedAtAction("GetProduct", new { id = product.ID }, product);
+            return Ok();
         }
 
         // PUT: api/Products/5
