@@ -80,7 +80,7 @@ namespace PRY20232084.Controllers
             return movement;
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("UpdateRawMaterialMovement/{id}")]
         public async Task<IActionResult> UpdateRawMaterialMovement(int id, UpdateRawMaterialMovementDTO rawMaterialMovementDTO)
         {
 			var movement = _context.Movements.Include(x => x.RawMaterialMovementDetails).Include(x => x.ProductMovementDetails).Where(x => x.ID == id).FirstOrDefault();
@@ -175,7 +175,7 @@ namespace PRY20232084.Controllers
             }
         }
 
-		[HttpPut("{id}")]
+		[HttpPut("UpdateProductMovement/{id}")]
 		public async Task<IActionResult> UpdateProductMovement(int id, UpdateProductMovementDTO productMovementDTO)
 		{
 			var movement = _context.Movements.Include(x => x.RawMaterialMovementDetails).Include(x => x.ProductMovementDetails).Where(x => x.ID == id).FirstOrDefault();
