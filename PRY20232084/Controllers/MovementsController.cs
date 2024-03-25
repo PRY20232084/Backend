@@ -9,6 +9,7 @@ using PRY20232084.Data;
 using PRY20232084.Models.Entities;
 using PRY20232084.DTOs;
 using Microsoft.AspNetCore.Cors;
+using PRY20232084.Models.DTOs;
 
 namespace PRY20232084.Controllers
 {
@@ -80,18 +81,86 @@ namespace PRY20232084.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMovement(int id, Movement movement)
+        public async Task<IActionResult> UpdateRawMaterialMovement(int id, UpdateRawMaterialMovementDTO rawMaterialMovementDTO)
         {
-            if (id != movement.ID)
-            {
-                return BadRequest();
-            }
+			var movement = _context.Movements.Include(x => x.RawMaterialMovementDetails).Include(x => x.ProductMovementDetails).Where(x => x.ID == id).FirstOrDefault();
+			if (movement == null)
+			{
+				return NotFound();
+			}
 
-            _context.Entry(movement).State = EntityState.Modified;
+			var movementType = movement.MovementType;
+			var registerType = movement.RegisterType;
 
-            try
+			if (registerType) //raw material
+			{
+				var rawMaterialDetail = movement.RawMaterialMovementDetails.FirstOrDefault();
+				var rawMaterial = _context.RawMaterials.Where(x => x.ID == rawMaterialDetail.RawMaterial_ID).FirstOrDefault();
+
+				if (movementType) //ingreso
+				{
+					rawMaterial.Stock -= rawMaterialDetail.Quantity;
+				}
+				else //salida
+				{
+					rawMaterial.Stock += rawMaterialDetail.Quantity;
+				}
+			}
+			else //product
+			{
+				var productDetail = movement.ProductMovementDetails.FirstOrDefault();
+				var product = _context.Products.Where(x => x.ID == productDetail.Product_ID).FirstOrDefault();
+
+				if (movementType) //ingreso
+				{
+					product.Stock -= productDetail.Quantity;
+				}
+				else //salida
+				{
+					product.Stock += productDetail.Quantity;
+				}
+			}
+
+			_context.Movements.Remove(movement);
+
+			var newMovement = new Movement
+			{
+				Description = rawMaterialMovementDTO.Description,
+				CreatedAt = DateTime.UtcNow,
+				BoughtDate = rawMaterialMovementDTO.BoughtDate,
+				MovementType = rawMaterialMovementDTO.MovementType,
+				RegisterType = rawMaterialMovementDTO.RegisterType,
+				CreatedBy = rawMaterialMovementDTO.CreatedBy
+			};
+
+			await _context.Movements.AddAsync(newMovement);
+
+			await _context.SaveChangesAsync();
+
+			var detail = new RawMaterialMovementDetail
+			{
+				RawMaterial_ID = rawMaterialMovementDTO.rawMaterialMovementDetailDTO.RawMaterial_ID,
+				Movement_ID = newMovement.ID,
+				Quantity = rawMaterialMovementDTO.rawMaterialMovementDetailDTO.Quantity
+			};
+
+			_context.RawMaterialMovementDetails.Add(detail);
+
+			var oldRawMaterial = _context.RawMaterials.Where(x => x.ID == rawMaterialMovementDTO.rawMaterialMovementDetailDTO.RawMaterial_ID).FirstOrDefault();
+
+			if (newMovement.MovementType) //Ingreso
+			{
+				oldRawMaterial.Stock += rawMaterialMovementDTO.rawMaterialMovementDetailDTO.Quantity;
+			}
+			else
+			{
+				oldRawMaterial.Stock -= rawMaterialMovementDTO.rawMaterialMovementDetailDTO.Quantity;
+			}
+
+			try
             {
                 await _context.SaveChangesAsync();
+                return Ok();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -104,8 +173,6 @@ namespace PRY20232084.Controllers
                     throw;
                 }
             }
-
-            return NoContent();
         }
 
         [HttpPost]
@@ -184,7 +251,7 @@ namespace PRY20232084.Controllers
             _context.Movements.Remove(movement);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool MovementExists(int id)
