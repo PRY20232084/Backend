@@ -143,7 +143,7 @@ namespace PRY20232084.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMovement(int id)
         {
-            var movement = await _context.Movements.FindAsync(id);
+            var movement = _context.Movements.Include(x => x.RawMaterialMovementDetails).Include(x => x.ProductMovementDetails).Where(x => x.ID == id).FirstOrDefault();
             if (movement == null)
             {
                 return NotFound();
