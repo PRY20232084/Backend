@@ -118,24 +118,24 @@ namespace PRY20232084.Controllers
             return Ok();
         }
 
-		[HttpPost]
-		public async Task<IActionResult> PostProduct2(ProductCreateDTO2 productDTO) //old version
-		{
-			var product = new Product
-			{
-				Name = productDTO.Name,
-				Description = productDTO.Description,
-				Size_ID = productDTO.Size_ID,
-				Style_ID = productDTO.Style_ID,
-				Stock = productDTO.Stock,
-				CreatedBy = productDTO.CreatedBy
-			};
+		//[HttpPost]
+		//public async Task<IActionResult> PostProduct2(ProductCreateDTO2 productDTO) //old version
+		//{
+		//	var product = new Product
+		//	{
+		//		Name = productDTO.Name,
+		//		Description = productDTO.Description,
+		//		Size_ID = productDTO.Size_ID,
+		//		Style_ID = productDTO.Style_ID,
+		//		Stock = productDTO.Stock,
+		//		CreatedBy = productDTO.CreatedBy
+		//	};
 
-			_context.Products.Add(product);
-			await _context.SaveChangesAsync();
+		//	_context.Products.Add(product);
+		//	await _context.SaveChangesAsync();
 
-			return CreatedAtAction("GetProduct", new { id = product.ID }, product);
-		}
+		//	return CreatedAtAction("GetProduct", new { id = product.ID }, product);
+		//}
 
 		// PUT: api/Products/5
 		[HttpPut("{id}")]
