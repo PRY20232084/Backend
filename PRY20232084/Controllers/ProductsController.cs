@@ -115,13 +115,30 @@ namespace PRY20232084.Controllers
 			}
 
 			await _context.SaveChangesAsync();
-
-            //return CreatedAtAction("GetProduct", new { id = product.ID }, product);
             return Ok();
         }
 
-        // PUT: api/Products/5
-        [HttpPut("{id}")]
+		[HttpPost]
+		public async Task<IActionResult> PostProduct2(ProductCreateDTO2 productDTO) //old version
+		{
+			var product = new Product
+			{
+				Name = productDTO.Name,
+				Description = productDTO.Description,
+				Size_ID = productDTO.Size_ID,
+				Style_ID = productDTO.Style_ID,
+				Stock = productDTO.Stock,
+				CreatedBy = productDTO.CreatedBy
+			};
+
+			_context.Products.Add(product);
+			await _context.SaveChangesAsync();
+
+			return CreatedAtAction("GetProduct", new { id = product.ID }, product);
+		}
+
+		// PUT: api/Products/5
+		[HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(int id, ProductCreateDTO productDTO)
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.ID == id);
