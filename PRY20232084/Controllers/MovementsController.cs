@@ -175,7 +175,102 @@ namespace PRY20232084.Controllers
             }
         }
 
-        [HttpPost]
+		[HttpPut("{id}")]
+		public async Task<IActionResult> UpdateProductMovement(int id, UpdateProductMovementDTO productMovementDTO)
+		{
+			var movement = _context.Movements.Include(x => x.RawMaterialMovementDetails).Include(x => x.ProductMovementDetails).Where(x => x.ID == id).FirstOrDefault();
+			if (movement == null)
+			{
+				return NotFound();
+			}
+
+			var movementType = movement.MovementType;
+			var registerType = movement.RegisterType;
+
+			if (registerType) //raw material
+			{
+				var rawMaterialDetail = movement.RawMaterialMovementDetails.FirstOrDefault();
+				var rawMaterial = _context.RawMaterials.Where(x => x.ID == rawMaterialDetail.RawMaterial_ID).FirstOrDefault();
+
+				if (movementType) //ingreso
+				{
+					rawMaterial.Stock -= rawMaterialDetail.Quantity;
+				}
+				else //salida
+				{
+					rawMaterial.Stock += rawMaterialDetail.Quantity;
+				}
+			}
+			else //product
+			{
+				var productDetail = movement.ProductMovementDetails.FirstOrDefault();
+				var product = _context.Products.Where(x => x.ID == productDetail.Product_ID).FirstOrDefault();
+
+				if (movementType) //ingreso
+				{
+					product.Stock -= productDetail.Quantity;
+				}
+				else //salida
+				{
+					product.Stock += productDetail.Quantity;
+				}
+			}
+
+			_context.Movements.Remove(movement);
+
+			var newMovement = new Movement
+			{
+				Description = productMovementDTO.Description,
+				CreatedAt = DateTime.UtcNow,
+				BoughtDate = productMovementDTO.BoughtDate,
+				MovementType = productMovementDTO.MovementType,
+				RegisterType = productMovementDTO.RegisterType,
+				CreatedBy = productMovementDTO.CreatedBy
+			};
+
+			await _context.Movements.AddAsync(newMovement);
+
+			await _context.SaveChangesAsync();
+			
+			var detail = new ProductMovementDetail
+			{
+				Product_ID = productMovementDTO.productMovementDetailDTO.ProductID,
+				Movement_ID = newMovement.ID,
+				Quantity = productMovementDTO.productMovementDetailDTO.Quantity
+			};
+
+			_context.ProductMovementDetails.Add(detail);
+
+			var oldProduct = _context.Products.Where(x => x.ID == productMovementDTO.productMovementDetailDTO.ProductID).FirstOrDefault();
+
+			if (newMovement.MovementType) //Ingreso
+			{
+				oldProduct.Stock += productMovementDTO.productMovementDetailDTO.Quantity;
+			}
+			else
+			{
+				oldProduct.Stock -= productMovementDTO.productMovementDetailDTO.Quantity;
+			}
+
+			try
+			{
+				await _context.SaveChangesAsync();
+				return Ok();
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				if (!MovementExists(id))
+				{
+					return NotFound();
+				}
+				else
+				{
+					throw;
+				}
+			}
+		}
+
+		[HttpPost]
         public async Task<ActionResult<MovementResponseDTO>> PostMovement(MovementRequestDTO movementRequestDTO)
         {
             var movement = new Movement
