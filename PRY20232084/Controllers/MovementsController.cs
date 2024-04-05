@@ -52,10 +52,10 @@ namespace PRY20232084.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetIncomeMovements()
+        public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetProductIncomeMovements()
         {
             var movements = await _context.Movements
-				.Where(x => x.MovementType == true)
+				.Where(x => x.MovementType == true && x.RegisterType == false)
                 .Select(m => new MovementResponseDTO
                 {
                     ID = m.ID,
@@ -79,10 +79,64 @@ namespace PRY20232084.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetWithdrawalMovements()
+        public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetProductWithdrawalMovements()
         {
             var movements = await _context.Movements
-                .Where(x => x.MovementType == false)
+                .Where(x => x.MovementType == false && x.RegisterType == false)
+                .Select(m => new MovementResponseDTO
+                {
+                    ID = m.ID,
+                    Description = m.Description,
+                    CreatedAt = m.CreatedAt,
+                    BoughtDate = m.BoughtDate,
+                    MovementType = m.MovementType,
+                    RegisterType = m.RegisterType,
+                    CreatedBy = m.CreatedBy
+                })
+                .ToListAsync();
+
+            // fetch username for each movement
+            foreach (MovementResponseDTO movement in movements)
+            {
+                var user = await _context.Users.FindAsync(movement.CreatedBy);
+                movement.CreatedBy = user.Name;
+            }
+
+            return movements;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetRawMaterialIncomeMovements()
+        {
+            var movements = await _context.Movements
+                .Where(x => x.MovementType == true && x.RegisterType == true)
+                .Select(m => new MovementResponseDTO
+                {
+                    ID = m.ID,
+                    Description = m.Description,
+                    CreatedAt = m.CreatedAt,
+                    BoughtDate = m.BoughtDate,
+                    MovementType = m.MovementType,
+                    RegisterType = m.RegisterType,
+                    CreatedBy = m.CreatedBy
+                })
+                .ToListAsync();
+
+            // fetch username for each movement
+            foreach (MovementResponseDTO movement in movements)
+            {
+                var user = await _context.Users.FindAsync(movement.CreatedBy);
+                movement.CreatedBy = user.Name;
+            }
+
+            return movements;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetRawMaterialWithdrawalMovements()
+        {
+            var movements = await _context.Movements
+                .Where(x => x.MovementType == false && x.RegisterType == true)
                 .Select(m => new MovementResponseDTO
                 {
                     ID = m.ID,
