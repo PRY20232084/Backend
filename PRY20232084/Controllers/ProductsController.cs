@@ -87,39 +87,39 @@ namespace PRY20232084.Controllers
         }
 
         // POST: api/Products
-        [HttpPost]
-   //     public async Task<IActionResult> PostProduct(ProductCreateDTO productDTO)
-   //     {
-   //         var product = new Product
-   //         {
-   //             Name = productDTO.Name,
-   //             Description = productDTO.Description,
-   //             Size_ID = productDTO.Size_ID,
-   //             Style_ID = productDTO.Style_ID,
-   //             Stock = productDTO.Stock,
-   //             CreatedBy = productDTO.CreatedBy
-   //         };
+        [HttpPost("PostProduct")]
+        public async Task<IActionResult> PostProduct(ProductCreateDTO productDTO)
+        {
+            var product = new Product
+            {
+                Name = productDTO.Name,
+                Description = productDTO.Description,
+                Size_ID = productDTO.Size_ID,
+                Style_ID = productDTO.Style_ID,
+                Stock = productDTO.Stock,
+                CreatedBy = productDTO.CreatedBy
+            };
 
-   //         _context.Products.Add(product);
-   //         await _context.SaveChangesAsync();
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
 
-   //         foreach(CreateProductDetailDTO detail in productDTO.productDetailDTOs)
-   //         {
-			//	var productDetail = new ProductDetail
-			//	{
-			//		Product_ID = product.ID,
-			//		RawMaterial_ID = detail.RawMaterial_ID,
-			//		Quantity = detail.Quantity
-			//	};
-			//	_context.ProductDetails.Add(productDetail);
-			//}
+            foreach (CreateProductDetailDTO detail in productDTO.productDetailDTOs)
+            {
+                var productDetail = new ProductDetail
+                {
+                    Product_ID = product.ID,
+                    RawMaterial_ID = detail.RawMaterial_ID,
+                    Quantity = detail.Quantity
+                };
+                _context.ProductDetails.Add(productDetail);
+            }
 
-			//await _context.SaveChangesAsync();
-   //         return Ok();
-   //     }
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
 
-        [HttpPost]
-        public async Task<IActionResult> PostProduct(ProductCreateDTO2 productDTO) //old version
+        [HttpPost("OldPostProduct")]
+        public async Task<IActionResult> OldPostProduct(ProductCreateDTO2 productDTO) //old version
         {
             var product = new Product
             {
