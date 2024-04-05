@@ -51,7 +51,7 @@ namespace PRY20232084.Controllers
             return movements;
         }
 
-        [HttpGet]
+        [HttpGet("GetProductIncomeMovements")]
         public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetProductIncomeMovements()
         {
             var movements = await _context.Movements
@@ -78,7 +78,7 @@ namespace PRY20232084.Controllers
             return movements;
         }
 
-        [HttpGet]
+        [HttpGet("GetProductWithdrawalMovements")]
         public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetProductWithdrawalMovements()
         {
             var movements = await _context.Movements
@@ -105,7 +105,7 @@ namespace PRY20232084.Controllers
             return movements;
         }
 
-        [HttpGet]
+        [HttpGet("GetRawMaterialIncomeMovements")]
         public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetRawMaterialIncomeMovements()
         {
             var movements = await _context.Movements
@@ -132,7 +132,7 @@ namespace PRY20232084.Controllers
             return movements;
         }
 
-        [HttpGet]
+        [HttpGet("GetRawMaterialWithdrawalMovements")]
         public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetRawMaterialWithdrawalMovements()
         {
             var movements = await _context.Movements
