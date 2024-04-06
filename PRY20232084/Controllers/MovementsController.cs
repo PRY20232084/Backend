@@ -51,6 +51,60 @@ namespace PRY20232084.Controllers
             return movements;
         }
 
+        [HttpGet("GetIncomeMovements")]
+        public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetIncomeMovements()
+        {
+            var movements = await _context.Movements
+                .Where(x => x.MovementType == true)
+                .Select(m => new MovementResponseDTO
+                {
+                    ID = m.ID,
+                    Description = m.Description,
+                    CreatedAt = m.CreatedAt,
+                    BoughtDate = m.BoughtDate,
+                    MovementType = m.MovementType,
+                    RegisterType = m.RegisterType,
+                    CreatedBy = m.CreatedBy
+                })
+                .ToListAsync();
+
+            // fetch username for each movement
+            foreach (MovementResponseDTO movement in movements)
+            {
+                var user = await _context.Users.FindAsync(movement.CreatedBy);
+                movement.CreatedBy = user.Name;
+            }
+
+            return movements;
+        }
+
+        [HttpGet("GetWithdrawalMovements")]
+        public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetWithdrawalMovements()
+        {
+            var movements = await _context.Movements
+                .Where(x => x.MovementType == false)
+                .Select(m => new MovementResponseDTO
+                {
+                    ID = m.ID,
+                    Description = m.Description,
+                    CreatedAt = m.CreatedAt,
+                    BoughtDate = m.BoughtDate,
+                    MovementType = m.MovementType,
+                    RegisterType = m.RegisterType,
+                    CreatedBy = m.CreatedBy
+                })
+                .ToListAsync();
+
+            // fetch username for each movement
+            foreach (MovementResponseDTO movement in movements)
+            {
+                var user = await _context.Users.FindAsync(movement.CreatedBy);
+                movement.CreatedBy = user.Name;
+            }
+
+            return movements;
+        }
+
         [HttpGet("GetProductIncomeMovements")]
         public async Task<ActionResult<IEnumerable<MovementResponseDTO>>> GetProductIncomeMovements()
         {
